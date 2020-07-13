@@ -10,3 +10,4 @@ target/
 bin/
 out/
 .DS_Store
+deploy.sh
