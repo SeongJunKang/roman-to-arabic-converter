@@ -10,6 +10,8 @@ public class R2AConverter {
 
   protected final static String[][] ROMAN_ARABIC_ARRAY =
       {{"M", "1000"}, {"D", "500"}, {"C", "100"}, {"L", "50"}, {"X", "10"}, {"V", "5"}, {"I", "1"}};
+  protected final static String[][] exceptCase = 
+    {{"XC","LXXXX"},{"XL","XXXX"},{"IX","VIIII"},{"IV","IIII"}};
 
   protected static Map<String, String> getRomanValueMap() {
     if (romanValueMap == null) {
@@ -32,10 +34,20 @@ public class R2AConverter {
   }
 
 
+  /***
+   * roman String convert arabic number
+   * @param roman
+   * @return
+   * @throws Exception : could not found roman character
+   */
   public static int convertRomanToArabicNumber(String roman) throws Exception {
     int result = 0;
     char c = 0;
     try {
+      for (String[] eCase : exceptCase) {
+        roman = roman.replace(eCase[0], eCase[1]);
+      }
+      
       for (int i = 0; i < roman.length(); i++) {
         c = roman.charAt(i);
         int value = Integer.parseInt(getRomanValueMap().get(String.valueOf(c)));
@@ -47,6 +59,12 @@ public class R2AConverter {
     return result;
   }
 
+  /***
+   * arabic number convert roman number.
+   * cannot convert upper line (\u0305) yet.
+   * @param number
+   * @return
+   */
   public static String convertArabicNumberToRoman(int number) {
     int count[] = new int[ROMAN_ARABIC_ARRAY.length];
     int target = number;
@@ -62,7 +80,11 @@ public class R2AConverter {
         builder.append(ROMAN_ARABIC_ARRAY[j][0]);
       }
     }
-    return builder.toString();
+    String result = builder.toString();
+    for (String[] eCase : exceptCase) {
+      result = result.replace(eCase[1], eCase[0]);
+    }
+    return result;
   }
 
 }
