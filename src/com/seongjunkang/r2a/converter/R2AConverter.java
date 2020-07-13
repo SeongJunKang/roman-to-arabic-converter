@@ -32,7 +32,7 @@ public class R2AConverter {
   }
 
 
-  public static int ConvertRomanToArabicNumber(String roman) throws Exception {
+  public static int convertRomanToArabicNumber(String roman) throws Exception {
     int result = 0;
     char c = 0;
     try {
@@ -47,7 +47,7 @@ public class R2AConverter {
     return result;
   }
 
-  public static String ConvertArabicNumberToRoman(int number) {
+  public static String convertArabicNumberToRoman(int number) {
     int count[] = new int[ROMAN_ARABIC_ARRAY.length];
     int target = number;
     for (int i = 0 ; i < ROMAN_ARABIC_ARRAY.length ; i++) {
