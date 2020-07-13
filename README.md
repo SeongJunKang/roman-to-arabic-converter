@@ -2,7 +2,7 @@
 roman number to arabic number converter
 
 
-#로마 숫자를 아라비아 숫자로 변환하는 코드
+# 로마 숫자를 아라비아 숫자로 변환하는 코드
 
 
 ## 로마 숫자를 아라비아 숫자로 변환
