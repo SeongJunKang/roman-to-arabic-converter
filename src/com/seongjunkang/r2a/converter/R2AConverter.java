@@ -10,8 +10,6 @@ public class R2AConverter {
 
   protected final static String[][] ROMAN_ARABIC_ARRAY =
       {{"M", "1000"}, {"D", "500"}, {"C", "100"}, {"L", "50"}, {"X", "10"}, {"V", "5"}, {"I", "1"}};
-  protected final static String[][] exceptCase = 
-    {{"XC","LXXXX"},{"XL","XXXX"},{"IX","VIIII"},{"IV","IIII"}};
 
   protected static Map<String, String> getRomanValueMap() {
     if (romanValueMap == null) {
@@ -36,6 +34,7 @@ public class R2AConverter {
 
   /***
    * roman String convert arabic number
+   * 
    * @param roman
    * @return
    * @throws Exception : could not found roman character
@@ -43,15 +42,18 @@ public class R2AConverter {
   public static int convertRomanToArabicNumber(String roman) throws Exception {
     int result = 0;
     char c = 0;
+    char nc = 0;
     try {
-      for (String[] eCase : exceptCase) {
-        roman = roman.replace(eCase[0], eCase[1]);
-      }
-      
       for (int i = 0; i < roman.length(); i++) {
         c = roman.charAt(i);
         int value = Integer.parseInt(getRomanValueMap().get(String.valueOf(c)));
-        result += value;
+        if (i + 1 < roman.length()) {
+          nc = roman.charAt(i + 1);
+          int nValue = Integer.parseInt(getRomanValueMap().get(String.valueOf(nc)));
+          result = (value < nValue) ? result - value : result + value;
+        } else {
+          result += value;
+        }
       }
     } catch (NumberFormatException e) {
       throw new NoSuchRomanException("Could not find that character :" + String.valueOf(c));
@@ -61,30 +63,36 @@ public class R2AConverter {
 
   /***
    * arabic number convert roman number.
-   * cannot convert upper line (\u0305) yet.
+   * 
    * @param number
    * @return
    */
   public static String convertArabicNumberToRoman(int number) {
-    int count[] = new int[ROMAN_ARABIC_ARRAY.length];
-    int target = number;
-    for (int i = 0 ; i < ROMAN_ARABIC_ARRAY.length ; i++) {
-      int division = Integer.parseInt(ROMAN_ARABIC_ARRAY[i][1]); 
-      count[i] = (int)Math.floor(target/division);
-      target = target % division;
-    }
     StringBuilder builder = new StringBuilder();
-    for(int j = 0 ; j < count.length ; j++) {
-      int value = count[j];
-      for (int k = 0 ; k < value; k++) {
-        builder.append(ROMAN_ARABIC_ARRAY[j][0]);
+    int target = number;
+    for (int i = 0; i < ROMAN_ARABIC_ARRAY.length; i++) {
+      int division = Integer.parseInt(ROMAN_ARABIC_ARRAY[i][1]);
+      while(target / division != 0) {
+        int digit = (int) (Math.pow(10, (int) Math.log10(target)));
+        int prefix = (int) (target / digit);
+        String character = ROMAN_ARABIC_ARRAY[i][0];
+        String integer = Integer.toString(((prefix + 1) * digit));
+        if (prefix % 5 == 4) {
+          String second = getArabicValueMap().get(integer);
+          String first = getArabicValueMap().get(Integer.toString(digit));
+          if (first.equals(character)) {
+            builder.append(i == 0 ? second : first + second);
+            target = target - prefix * digit;
+          } else {
+            break;
+          }
+        } else {
+          builder.append(character);
+          target = target - division;
+        }
       }
     }
-    String result = builder.toString();
-    for (String[] eCase : exceptCase) {
-      result = result.replace(eCase[1], eCase[0]);
-    }
-    return result;
+    return builder.toString();
   }
 
 }
